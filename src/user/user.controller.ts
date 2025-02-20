@@ -2,10 +2,9 @@ import {
   Body,
   Controller,
   Get,
-  HttpException,
-  HttpStatus,
   Post,
-  Req,
+  Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -15,6 +14,10 @@ import { UserResponseInterface } from '@app/user/types/userResponse.interface';
 import { LoginUserDto } from '@app/user/dto/loginUser.dto';
 
 import { ExpressRequest } from '@app/types/expressRequest.interface';
+import { User } from '@app/user/decorators/user.decorator';
+import { UserEntity } from '@app/user/user.entity';
+import { AuthGuard } from '@app/user/guards/auth.guard';
+import { UpdateUserDto } from '@app/user/dto/updateUser.dto';
 
 @Controller()
 export class UserController {
@@ -39,13 +42,18 @@ export class UserController {
   }
 
   @Get('user')
-  async currenUser(
-    @Req() request: ExpressRequest,
-  ): Promise<UserResponseInterface> {
-    if (!request.user) {
-      throw new HttpException('User not found', HttpStatus.UNAUTHORIZED);
-    }
+  @UseGuards(AuthGuard)
+  async currenUser(@User() user: UserEntity): Promise<UserResponseInterface> {
+    return this.userService.buildUserResponse(user);
+  }
 
-    return this.userService.buildUserResponse(request.user);
+  @Put('user')
+  @UseGuards(AuthGuard)
+  async updateCurrentUser(
+    @User('id') currenUserId: number,
+    @Body('user') updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseInterface> {
+    const user = await this.userService.updateUser(currenUserId, updateUserDto);
+    return this.userService.buildUserResponse(user);
   }
 }
