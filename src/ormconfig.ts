@@ -13,5 +13,8 @@ const config: PostgresConnectionOptions = {
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+  ssl: {
+    rejectUnauthorized: false, // Eğer veritabanınızın sertifikasını doğrulamak istemiyorsanız bu seçeneği kullanabilirsiniz
+  },
 };
 export default config;
