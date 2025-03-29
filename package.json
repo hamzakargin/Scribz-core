@@ -87,6 +87,6 @@
     "testEnvironment": "node"
   },
   "_moduleAliases": {
-    "@app": "./dist/app"
+    "@app": "./src/app"
   }
 }
